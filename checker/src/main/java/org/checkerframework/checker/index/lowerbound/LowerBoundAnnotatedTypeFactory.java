@@ -163,7 +163,6 @@ public class LowerBoundAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
     }
 
-    /** Handles cases 1, 2, and 3. */
     /** chars are unsigned implies chars are non-negative. See JLS 4.2. */
     private void ensureCharNonNegative(AnnotatedTypeMirror type) {
         if (type.getUnderlyingType().getKind() == TypeKind.CHAR) {
@@ -173,6 +172,7 @@ public class LowerBoundAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         }
     }
 
+    /** Handles cases 1, 2, and 3. */
     @Override
     public void addComputedTypeAnnotations(Element element, AnnotatedTypeMirror type) {
         super.addComputedTypeAnnotations(element, type);
