@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import org.checkerframework.checker.index.IndexMethodIdentifier;
 import org.checkerframework.checker.index.IndexUtil;
@@ -49,6 +50,7 @@ import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.TypesUtils;
 
 /**
  * Implements the introduction rules for the Lower Bound Checker.
@@ -165,12 +167,32 @@ public class LowerBoundAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
     /** chars are unsigned implies chars are non-negative. See JLS 4.2. */
     private void ensureCharNonNegative(AnnotatedTypeMirror type) {
+        TypeKind typeKind = type.getUnderlyingType().getKind();
+        switch (typeKind) {
+            case CHAR:
+                if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN)))
+                    type.replaceAnnotation(NN);
+
+            case DECLARED:
+                String qualifiedName =
+                        TypesUtils.getQualifiedName((DeclaredType) type.getUnderlyingType())
+                                .toString();
+                if (qualifiedName.equals("java.lang.Character")) {
+                    if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN))) {
+                        type.replaceAnnotation(NN);
+                    }
+                }
+        }
+    }
+
+    /*
         if (type.getUnderlyingType().getKind() == TypeKind.CHAR) {
             if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN))) {
                 type.replaceAnnotation(NN);
             }
         }
     }
+    */
 
     /** Handles cases 1, 2, and 3. */
     @Override
