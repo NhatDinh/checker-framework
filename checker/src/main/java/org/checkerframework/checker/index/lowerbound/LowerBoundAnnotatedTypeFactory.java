@@ -172,7 +172,7 @@ public class LowerBoundAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             case CHAR:
                 if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN)))
                     type.replaceAnnotation(NN);
-
+                break;
             case DECLARED:
                 String qualifiedName =
                         TypesUtils.getQualifiedName((DeclaredType) type.getUnderlyingType())
@@ -182,6 +182,7 @@ public class LowerBoundAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                         type.replaceAnnotation(NN);
                     }
                 }
+                break;
         }
     }
 
