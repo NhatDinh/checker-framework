@@ -7,8 +7,12 @@ public class NonnegativeChar {
         for (char value : array) ; // line 7
     }
 
-    char constant() {
+    char constant_max() {
         return Character.MAX_VALUE; // line 11
+    }
+
+    char constant_min() {
+        return Character.MIN_VALUE; // line 11
     }
 
     char conversion(int i) {
