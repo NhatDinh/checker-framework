@@ -12,7 +12,7 @@ public class NonnegativeChar {
     }
 
     char constant_min() {
-        return Character.MIN_VALUE; // line 11
+        return Character.MIN_VALUE; // line 13
     }
 
     char conversion(int i) {
