@@ -14,8 +14,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.index.IndexMethodIdentifier;
 import org.checkerframework.checker.index.IndexUtil;
 import org.checkerframework.checker.index.inequality.LessThanAnnotatedTypeFactory;
@@ -50,7 +50,6 @@ import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.TreeUtils;
-import org.checkerframework.javacutil.TypesUtils;
 
 /**
  * Implements the introduction rules for the Lower Bound Checker.
@@ -167,33 +166,26 @@ public class LowerBoundAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
     /** chars are unsigned implies chars are non-negative. See JLS 4.2. */
     private void ensureCharNonNegative(AnnotatedTypeMirror type) {
-        TypeKind typeKind = type.getUnderlyingType().getKind();
+        TypeMirror typeMirror = type.getUnderlyingType();
+        TypeKind typeKind = typeMirror.getKind();
         switch (typeKind) {
-            case CHAR:
-                if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN)))
-                    type.replaceAnnotation(NN);
-                break;
-            case DECLARED:
-                String qualifiedName =
-                        TypesUtils.getQualifiedName((DeclaredType) type.getUnderlyingType())
-                                .toString();
-                if (qualifiedName.equals("java.lang.Character")) {
+            case ARRAY:
+                AnnotatedTypeMirror.AnnotatedArrayType annotatedArrayType =
+                        ((AnnotatedTypeMirror.AnnotatedArrayType) type);
+                AnnotatedTypeMirror componentType = annotatedArrayType.getComponentType();
+                TypeKind componentKind = componentType.getUnderlyingType().getKind();
+                if (componentKind == TypeKind.CHAR) {
                     if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN))) {
                         type.replaceAnnotation(NN);
                     }
                 }
                 break;
+            case CHAR:
+                if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN)))
+                    type.replaceAnnotation(NN);
+                break;
         }
     }
-
-    /*
-        if (type.getUnderlyingType().getKind() == TypeKind.CHAR) {
-            if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN))) {
-                type.replaceAnnotation(NN);
-            }
-        }
-    }
-    */
 
     /** Handles cases 1, 2, and 3. */
     @Override
