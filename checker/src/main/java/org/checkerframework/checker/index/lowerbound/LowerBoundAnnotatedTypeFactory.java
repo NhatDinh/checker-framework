@@ -169,21 +169,19 @@ public class LowerBoundAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         TypeMirror typeMirror = type.getUnderlyingType();
         TypeKind typeKind = typeMirror.getKind();
         switch (typeKind) {
-            case ARRAY:
-                AnnotatedTypeMirror.AnnotatedArrayType annotatedArrayType =
-                        ((AnnotatedTypeMirror.AnnotatedArrayType) type);
-                AnnotatedTypeMirror componentType = annotatedArrayType.getComponentType();
-                TypeKind componentKind = componentType.getUnderlyingType().getKind();
-                if (componentKind == TypeKind.CHAR) {
-                    if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN))) {
-                        type.replaceAnnotation(NN);
-                    }
-                }
-                break;
             case CHAR:
                 if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN)))
                     type.replaceAnnotation(NN);
                 break;
+            case ARRAY:
+                AnnotatedTypeMirror.AnnotatedArrayType annotatedArrayType =
+                        ((AnnotatedTypeMirror.AnnotatedArrayType) type);
+                AnnotatedTypeMirror componentType = annotatedArrayType.getComponentType();
+                if (componentType != null) {
+                    ensureCharNonNegative((AnnotatedTypeMirror) componentType);
+                    componentType = annotatedArrayType.getComponentType();
+                    break;
+                }
         }
     }
 
