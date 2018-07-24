@@ -15,9 +15,10 @@ public class NonnegativeChar {
         return Character.MIN_VALUE; // line 13
     }
 
+    /* Ignore warning: NonnegativeChar.java:19: warning: (cast.unsafe)
     char conversion(int i) {
         return (char) i; // line 15
-    }
+    } */
 
     public void takeList(ArrayList<Character> z) {}
 
