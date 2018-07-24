@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.index.IndexMethodIdentifier;
@@ -50,6 +51,7 @@ import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.TypesUtils;
 
 /**
  * Implements the introduction rules for the Lower Bound Checker.
@@ -173,6 +175,15 @@ public class LowerBoundAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN)))
                     type.replaceAnnotation(NN);
                 break;
+            case DECLARED:
+                String qualifiedName =
+                        TypesUtils.getQualifiedName((DeclaredType) type.getUnderlyingType())
+                                .toString();
+                if (qualifiedName.equals("java.lang.Character")) {
+                    if (qualHierarchy.isSubtype(NN, type.getAnnotationInHierarchy(UNKNOWN))) {
+                        type.replaceAnnotation(NN);
+                    }
+                }
             case ARRAY:
                 AnnotatedTypeMirror.AnnotatedArrayType annotatedArrayType =
                         ((AnnotatedTypeMirror.AnnotatedArrayType) type);
